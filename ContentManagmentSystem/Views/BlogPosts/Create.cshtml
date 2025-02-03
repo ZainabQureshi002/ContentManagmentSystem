@@ -1,0 +1,41 @@
+﻿@model PostViewModel;
+<h2>Create Blog Post</h2>
+<form asp-action="Create" enctype="multipart/form-data">
+
+	<div class="form-group">
+		<label asp-for="BlogPost.Title"></label>
+		<input asp-for="BlogPost.Title" class="form-control" />
+		<span asp-validation-for="BlogPost.Title" class="text-danger"></span>
+	</div>
+
+	<div class="form-group">
+		<label asp-for="BlogPost.Content"></label>
+		<textarea asp-for="BlogPost.Content" class="form-control" rows="5"></textarea>
+		<span asp-validation-for="BlogPost.Content" class="text-danger"></span>
+	</div>
+
+	<div class="form-group">
+		<label asp-for="Image" class="control-label"></label>
+		<input asp-for="Image" type="file" class="form-control" />
+		<span asp-validation-for="Image" class="text-danger"></span>
+	</div>
+
+
+	<div class="form-group">
+		<label asp-for="BlogPost.Link"></label>
+		<input asp-for="BlogPost.Link" class="form-control" />
+		<span asp-validation-for="BlogPost.Link" class="text-danger"></span>
+	</div>
+	<div class="form-group">
+		<label asp-for="BlogPost.CategoryId">Category</label>
+		<select asp-for="BlogPost.CategoryId" class="form-control" asp-items="@Model.Categories">
+			<option value="">-- Select Category --</option>
+		</select>
+		<span asp-validation-for="BlogPost.CategoryId" class="text-danger"></span>
+	</div>
+
+
+	<button type="submit" class="btn btn-success">Create</button>
+	<a asp-action="Index" class="btn btn-secondary">Cancel</a>
+	 
+</form>

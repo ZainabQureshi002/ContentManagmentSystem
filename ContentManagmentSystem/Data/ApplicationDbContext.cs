@@ -13,7 +13,7 @@ namespace DependecyInjection.Data
         }
 
          public DbSet<BlogPost> BlogPosts { get; set; }
-        public DbSet<PortfolioItem> PortfolioItems { get; set; }
+
         public DbSet<Category> Categories { get; set; }
         public DbSet<Comment> Comments { get; set; }
 

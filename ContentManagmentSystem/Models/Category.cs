@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using ContentManagmentSystem.Models;
 
 public class Category
 {
@@ -8,6 +9,6 @@ public class Category
     public string Name { get; set; }
 
     public List<BlogPost> BlogPosts { get; set; }
-    public List<PortfolioItem> PortfolioItems { get; set; }
+   
 }
 

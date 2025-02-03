@@ -8,7 +8,7 @@ public class Comment
 
     [Required]
     public string UserName { get; set; }
-    public string CommentText { get; set; }
+    public string Content { get; set; }
 
     public DateTime CreatedDate { get; set; } = DateTime.Now;
 

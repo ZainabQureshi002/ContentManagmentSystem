@@ -1,33 +1,42 @@
 ﻿using ContentManagmentSystem.Models;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-
-public class BlogPost
+namespace ContentManagmentSystem.Models
 {
-    public int Id { get; set; }
+    public class BlogPost
+    {
+        public int Id { get; set; }
 
-    [Required]
-    public string Title { get; set; }
+        [Required]
+        public string Title { get; set; }
 
-    [Required]
-    public string Content { get; set; }
+        [Required]
+        public string Content { get; set; }
 
-    public DateTime CreatedDate { get; set; } = DateTime.Now;
-    public DateTime UpdatedDate { get; set; } = DateTime.Now;
+        [ValidateNever]
+        public string? PictureUrl { get; set; } // Stores the path to the product's image
+     
+        [ValidateNever]
+        public string Link { get; set; }
+        public DateTime CreatedDate { get; set; } = DateTime.Now;
 
-    [Required]
-    public string Status { get; set; }
+        //[Required]
+        //public string Status { get; set; }
 
-    [Required]
-    [ForeignKey("Category")]
-    public int CategoryId { get; set; }
-    public Category Category { get; set; }
+        [Required]
+  
+        public int CategoryId { get; set; }
+        [ValidateNever]
+        [ForeignKey(nameof(CategoryId))]
+        public Category? Category { get; set; }
 
-    //[Required]
-    //[ForeignKey("Author")]
-    //public string AuthorId { get; set; }
-    //public ApplicationUser Author { get; set; }
+        //[Required]
+        //[ForeignKey("Author")]
+        //public string AuthorId { get; set; }
+        //public ApplicationUser Author { get; set; }
+        [ValidateNever]
+        public List<Comment>? Comments { get; set; }
 
-    public ICollection<Comment> Comments { get; set; }
-    
+    }
 }
