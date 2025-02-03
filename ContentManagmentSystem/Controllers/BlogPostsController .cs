@@ -83,6 +83,65 @@ namespace ContentManagmentSystem.Controllers
             }
             return View(model);
         }
-        
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var blogPost = await _context.BlogPosts.FindAsync(id);
+
+            PostViewModel postViewModel = new PostViewModel
+            {
+                BlogPost = blogPost,
+                Categories = _context.Categories.Select(x =>
+                new SelectListItem
+                {
+                    Text = x.Name,
+                    Value = x.Id.ToString()
+                }).ToList(),
+
+            };
+            return View(postViewModel);
+
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(PostViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                string wwwRootPath = _webHostEnvironment.WebRootPath;
+                string fileName = Guid.NewGuid().ToString() + "_" + Path.GetExtension(model.Image.FileName);
+                string filePath = Path.Combine(wwwRootPath, "uploads", fileName);
+
+                string uploadsDirectory = Path.Combine(wwwRootPath, "uploads");
+                if (!Directory.Exists(uploadsDirectory))
+                {
+                    Directory.CreateDirectory(uploadsDirectory);
+                }
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    await model.Image.CopyToAsync(fileStream);
+                }
+                if (!string.IsNullOrEmpty(model.BlogPost.PictureUrl))
+                {
+                    string oldFilePath = Path.Combine(wwwRootPath, model.BlogPost.PictureUrl.TrimStart('/'));
+                    if (System.IO.File.Exists(oldFilePath))
+                    {
+                        System.IO.File.Delete(oldFilePath);
+                    }
+                }
+
+                model.BlogPost.PictureUrl = $"/uploads/{fileName}";
+
+                _context.Update(model.BlogPost);
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Index");
+            }
+            return View(model);
+        }
+
     }
 }

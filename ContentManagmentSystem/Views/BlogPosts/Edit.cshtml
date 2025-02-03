@@ -1,0 +1,61 @@
+﻿@model ContentManagmentSystem.Models.ViewModel.PostViewModel
+
+@{
+    ViewData["Title"] = "Edit Blog Post";
+}
+
+<h2>Edit Blog Post</h2>
+
+<form asp-action="Edit" enctype="multipart/form-data">
+    <input type="hidden" asp-for="BlogPost.Id" />
+
+    <div class="mb-3">
+        <label asp-for="BlogPost.Title" class="form-label">Title</label>
+        <input asp-for="BlogPost.Title" class="form-control" />
+        <span asp-validation-for="BlogPost.Title" class="text-danger"></span>
+    </div>
+
+
+    <div class="mb-3">
+        <label asp-for="BlogPost.Content" class="form-label">Content</label>
+        <textarea asp-for="BlogPost.Content" class="form-control" rows="5"></textarea>
+        <span asp-validation-for="BlogPost.Content" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="BlogPost.CategoryId" class="form-label">Category</label>
+        <select asp-for="BlogPost.CategoryId" asp-items="Model.Categories" class="form-control">
+            <option value="">Select a Category</option>
+        </select>
+        <span asp-validation-for="BlogPost.CategoryId" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Current Image</label>
+        @if (!string.IsNullOrEmpty(Model.BlogPost.PictureUrl))
+        {
+            <div>
+                <img src="@Model.BlogPost.PictureUrl" alt="Blog Image" width="150" height="100" />
+            </div>
+        }
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Upload New Image</label>
+        <input type="file" name="Image" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="BlogPost.Link" class="form-label">Post Link</label>
+        <input asp-for="BlogPost.Link" class="form-control" />
+        <span asp-validation-for="BlogPost.Link" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="BlogPost.CreatedDate" class="form-label">Created Date</label>
+        <input asp-for="BlogPost.CreatedDate" class="form-control" readonly />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
