@@ -27,6 +27,27 @@ namespace ContentManagmentSystem.Controllers
             return View(await blogPosts.ToListAsync());
         }
 
+        public async Task<IActionResult> Details(int id)
+        {
+            var blogPost = await _context.BlogPosts
+                .Include(b=> b.Category)
+                .FirstOrDefaultAsync(b=>b.Id == id);
+            var postViewModel = new PostViewModel
+            {
+                BlogPost = blogPost,
+                Categories = new List<SelectListItem>
+                {
+                    new SelectListItem
+                    {
+                       Value = blogPost.CategoryId.ToString(),
+                      Text = blogPost.Category.Name
+                    }
+
+                }
+            }; 
+
+            return View(postViewModel);
+        }
         // Create action: Show the create form
         public IActionResult Create()
         {
@@ -142,6 +163,35 @@ namespace ContentManagmentSystem.Controllers
             }
             return View(model);
         }
+        public async Task<IActionResult> Delete(int id)
+        {
+            var blogpost = await _context.BlogPosts.FindAsync(id);
 
+            return View(blogpost);
+
+        }
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var blogpost = await _context.BlogPosts.FindAsync(id);
+            if (blogpost == null)
+            {
+                return NotFound(); 
+            }
+            if (!string.IsNullOrEmpty(blogpost.PictureUrl))
+            {
+                string wwwRootPath= _webHostEnvironment.WebRootPath;
+                string imagePath = Path.Combine(wwwRootPath, blogpost.PictureUrl.TrimStart('/'));
+                if (System.IO.File.Exists(imagePath))
+                {
+                    System.IO.File.Delete(imagePath);
+                }
+                _context.BlogPosts.Remove(blogpost);
+                await _context.SaveChangesAsync();
+
+            }
+                return RedirectToAction(nameof(Index));
+        }
     }
 }
