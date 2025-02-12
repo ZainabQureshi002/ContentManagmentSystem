@@ -11,5 +11,8 @@ namespace ContentManagmentSystem.Models.ViewModel
         [ValidateNever]
         public IEnumerable<SelectListItem> Categories { get; set; }
         public BlogPost BlogPost { get; set; }
+        [ValidateNever]
+        public List<Comment> comments { get; set; } = new List<Comment>();
+        public Comment NewComment { get; set; } = new Comment();
     }
 }

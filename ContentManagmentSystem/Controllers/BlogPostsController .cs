@@ -30,8 +30,9 @@ namespace ContentManagmentSystem.Controllers
         public async Task<IActionResult> Details(int id)
         {
             var blogPost = await _context.BlogPosts
-                .Include(b=> b.Category)
-                .FirstOrDefaultAsync(b=>b.Id == id);
+                .Include(b => b.Comments)
+                .Include(b => b.Category)
+                .FirstOrDefaultAsync(b => b.Id == id);
             var postViewModel = new PostViewModel
             {
                 BlogPost = blogPost,
@@ -43,8 +44,10 @@ namespace ContentManagmentSystem.Controllers
                       Text = blogPost.Category.Name
                     }
 
-                }
-            }; 
+                },
+                comments = blogPost.Comments.ToList(),
+                NewComment = new Comment()
+            };
 
             return View(postViewModel);
         }
@@ -62,6 +65,32 @@ namespace ContentManagmentSystem.Controllers
             };
             return View(postViewModel);
         }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+
+        [HttpPost]
+        public async Task<IActionResult> CreateComment(int blogPostId, string userName, string content)
+        {
+            if (string.IsNullOrWhiteSpace(userName) || string.IsNullOrWhiteSpace(content))
+            {
+                return BadRequest();
+            }
+
+            var comment = new Comment
+            {
+                BlogPostId = blogPostId,
+                UserName = userName,
+                Content = content,
+                CreatedDate = DateTime.Now
+            };
+
+            _context.Comments.Add(comment);
+            await _context.SaveChangesAsync();
+
+            return Ok();
+        }
+
+
 
         // Create POST action: Save the new BlogPost
         [HttpPost]

@@ -1,4 +1,5 @@
 ﻿using ContentManagmentSystem.Models;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -19,5 +20,6 @@ public class Comment
     [Required]
     [ForeignKey("BlogPost")]
     public int BlogPostId { get; set; }
+    [ValidateNever]
     public BlogPost BlogPost { get; set; }
 }

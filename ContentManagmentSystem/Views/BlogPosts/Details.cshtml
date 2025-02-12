@@ -6,7 +6,7 @@
 
 <h2 class="text-center my-4">@Model.BlogPost.Title</h2>
 
-@if (!string.IsNullOrEmpty(Model.BlogPost.PictureUrl))
+@if (!String.IsNullOrEmpty(Model.BlogPost.PictureUrl))
 {
     <img src="@Url.Content(Model.BlogPost.PictureUrl)" class="img-fluid" alt="Blog Image" />
 }
@@ -16,6 +16,7 @@
 <div>
     <p><strong>Category:</strong> @Model.BlogPost.Category.Name</p>
     <p><strong>Created on:</strong> @Model.BlogPost.CreatedDate.ToString("MM/dd/yyyy")</p>
+    <a href="@Model.BlogPost.Link">@Model.BlogPost.Link</a>
 </div>
 
 <div>
@@ -23,3 +24,83 @@
     <a asp-action="Edit" asp-route-id="@Model.BlogPost.Id" class="btn btn-warning">Edit</a>
     <a asp-action="Delete" asp-route-id="@Model.BlogPost.Id" class="btn btn-danger">Delete</a>
 </div>
+
+<hr/>
+<h3>Comments</h3>
+@if (Model.comments.Any())
+{
+    <ul class="list-group">
+        @foreach (var comment in Model.comments){
+            <li class="list-group-item">
+                <strong> @comment.UserName</strong>(@comment.CreatedDate.ToString("MM/dd/yyyy")):
+                <p>
+                   @comment.Content
+                </p>
+            </li>
+        }
+    </ul>
+
+}
+else
+{
+    <p>No Comment yet.</p>
+
+}
+<hr/>
+
+<h4>Add a Comment</h4>
+<form id="commentForm">
+    <input type="hidden" id="blogPostId" value="@Model.BlogPost.Id" />
+    @Html.AntiForgeryToken()
+    <div class="mb-3">
+        <label for="UserName" class="form-label">Name</label>
+        <input type="text" id="UserName" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label for="Content" class="form-label">Comment</label>
+        <textarea id="Content" class="form-control" rows="3" required></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit Comment</button>
+</form>
+
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+     $(document).ready(function () {
+        $("#commentForm").submit(function (event) {
+            event.preventDefault();
+
+            var blogPostId = $("#blogPostId").val();
+            var userName = $("#UserName").val();
+            var content = $("#Content").val();
+            var token = $('input[name="__RequestVerificationToken"]').val();
+
+            $.ajax({
+                url: "@Url.Action("CreateComment", "BlogPosts")",
+                type: "POST",
+                data: {
+                    blogPostId: blogPostId,
+                    userName: userName,
+                    content: content,
+                    __RequestVerificationToken: token // Include the token here
+                },
+                success: function () {
+                    var newComment = `
+                        <li class="list-group-item">
+                            <strong>${userName}</strong> (just now):
+                            <p>${content}</p>
+                        </li>`;
+                    $(".list-group").append(newComment);
+                    $("#UserName").val('');
+                    $("#Content").val('');
+                    $("#noCommentsMessage").hide();
+                },
+                error: function () {
+                    alert("There was an error submitting your comment. Please try again.");
+                }
+            });
+        });
+    });
+</script>
