@@ -13,6 +13,7 @@ namespace ContentManagmentSystem.Models.ViewModel
         public BlogPost BlogPost { get; set; }
         [ValidateNever]
         public List<Comment> comments { get; set; } = new List<Comment>();
+        [ValidateNever]
         public Comment NewComment { get; set; } = new Comment();
     }
 }
