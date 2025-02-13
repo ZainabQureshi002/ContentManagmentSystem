@@ -31,12 +31,25 @@
 {
     <ul class="list-group">
         @foreach (var comment in Model.comments){
-            <li class="list-group-item">
+            <li class="list-group-item" id="comment-@comment.Id">
                 <strong> @comment.UserName</strong>(@comment.CreatedDate.ToString("MM/dd/yyyy")):
                 <p>
                    @comment.Content
                 </p>
+
+                <!--Edit And Delete Buttons-->
+                <button class="btn btn-sm btn-primary editCommentBtn" data-id="@comment.Id">Edit</button>
+                <button class="btn btn-sm btn-danger deleteCommentBtn" data-id="@comment.Id">Delete</button>
+           <!--Hidden Edit Form-->
+           <div class="editCommentForm d-none">
+                    <textarea class="form-control editCommentText">@comment.Content</textarea>
+                    <button class=" btn btn-sm btn-success saveCommentBtn" data-id="@comment.Id">Save</button>
+                    <button class=" btn btn-sm btn-secondary cancelEditBtn" data-id="@comment.Id">Cancel</button>
+           </div>
+            
             </li>
+
+
         }
     </ul>
 
@@ -102,5 +115,70 @@ else
                 }
             });
         });
+            
     });
+
+     $(document).on("click", ".editCommentBtn", function () {
+        var commentItem = $(this).closest("li");
+        commentItem.find(".comment-content").hide();
+        commentItem.find(".editCommentForm").removeClass("d-none");
+    });
+
+
+    $(document).on("click", ".cancelEditBtn", function () {
+         var commentItem = $(this).closest("li");
+         commentItem.find(".comment-content").show();
+         commentItem.find(".editCommentForm").addClass("d-none");
+     });
+
+        $(document).on("click", ".saveCommentBtn", function () {
+        var commentItem = $(this).closest("li");
+        var commentId = $(this).data("id");
+        var updatedContent = commentItem.find(".editCommentText").val();
+        var token = $('input[name="__RequestVerificationToken"]').val();
+
+        $.ajax({
+            url: "@Url.Action("EditComment", "BlogPosts")",
+            type: "POST",
+            headers: { "RequestVerificationToken": token },
+            data: { id: commentId, content: updatedContent },
+            success: function (response) {
+              
+                // ✅ Update UI immediately
+                commentItem.find("p").text(response.content);
+                commentItem.find(".editCommentForm").addClass("d-none");
+                commentItem.find(".comment-content").show();
+            },
+            error: function () {
+              
+                alert("Error editing comment.");
+            }
+        });
+    });
+
+
+         $(document).on("click", ".deleteCommentBtn", function () {
+        var commentId = $(this).data("id");
+        var token = $('input[name="__RequestVerificationToken"]').val();
+
+
+
+        $.ajax({
+            url: "@Url.Action("DeleteComment", "BlogPosts")",
+            type: "POST",
+            headers: {
+                "RequestVerificationToken": token
+            },
+            data: { commentId: commentId },
+            success: function (response) {
+                
+                $("#comment-" + commentId).remove(); // Remove comment from UI
+            },
+            error: function (xhr) {
+                
+                alert("Error deleting comment: " + xhr.responseText);
+            }
+        });
+    });
+
 </script>

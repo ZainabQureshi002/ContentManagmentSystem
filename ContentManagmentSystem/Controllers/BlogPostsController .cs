@@ -90,6 +90,41 @@ namespace ContentManagmentSystem.Controllers
             return Ok();
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult EditComment(int id, string content)
+        {
+            var comment = _context.Comments.FirstOrDefault(c => c.Id == id);
+            if (comment == null)
+            {
+                return NotFound();
+            }
+
+            comment.Content = content;
+            _context.Comments.Update(comment);
+            _context.SaveChanges();
+
+            return Ok(new { id = comment.Id, content = comment.Content }); // Return a 200 OK response
+        }
+
+
+      [HttpPost]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> DeleteComment(int commentId)
+{
+    var comment = await _context.Comments.FindAsync(commentId);
+    
+    if (comment == null)
+    {
+        return NotFound(new { message = "Comment not found." });
+    }
+
+    _context.Comments.Remove(comment);
+    await _context.SaveChangesAsync();
+
+    return Ok(new { message = "Comment deleted successfully." });
+}
+
 
 
         // Create POST action: Save the new BlogPost
